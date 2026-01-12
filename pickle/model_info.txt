@@ -1,0 +1,3 @@
+Model trained on: 2025-12-14 20:17:35.094399
+Scikit-learn version: 1.8.0
+Model type: GradientBoostingClassifier

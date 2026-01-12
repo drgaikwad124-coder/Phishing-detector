@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>About | Phishing URL Detection</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+    <!-- SAME BACKGROUND -->
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            line-height: 1.8;
+        }
+
+        /* HERO */
+        .about-hero {
+            text-align: center;
+            padding: 3rem 1rem 2.5rem;
+        }
+
+        .about-hero h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #dbeafe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .about-hero p {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 850px;
+            margin: auto;
+        }
+
+        /* CONTENT CARD */
+        .about-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
+            padding: 2.8rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+        }
+
+        .about-card h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: #ffffff;
+        }
+
+        .about-card p,
+        .about-card li {
+            font-size: 1.08rem;
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        /* FADE */
+        .fade-in {
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ✅ NAVBAR (MATCHES HISTORY PAGE EXACTLY) -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="margin-bottom: 0;">
+    <div class="container">
+        <a class="navbar-brand" href="/" style="font-size: 1.8rem; font-weight: 700;">
+            🛡️ Phishing Detector
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">🏠 Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/about">ℹ️ About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/history">📊 History</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="container">
+    <div class="about-hero fade-in">
+        <h1>About Phishing Detection System</h1>
+        <p>
+            A machine learning based web application designed to detect phishing
+            websites and help users identify unsafe URLs before sharing sensitive information.
+        </p>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container fade-in">
+
+    <div class="about-card">
+        <h2>What is Phishing?</h2>
+        <p>
+            Phishing is a type of cybercrime in which attackers create fake websites or messages
+            that appear to be legitimate. These deceptive techniques are used to trick users into
+            revealing sensitive information such as usernames, passwords, and financial details.
+        </p>
+        <p>
+            Phishing attacks often rely on social engineering rather than technical vulnerabilities,
+            making them difficult to detect through traditional security mechanisms.
+        </p>
+    </div>
+
+    <div class="about-card">
+        <h2>How This System Works</h2>
+        <ul>
+            <li>User submits a URL for analysis</li>
+            <li>Important URL and content-based features are extracted</li>
+            <li>The trained model evaluates the features</li>
+            <li>The website is classified as Safe or Phishing</li>
+        </ul>
+    </div>
+
+    <div class="about-card">
+        <h2>Technologies Used</h2>
+        <ul>
+            <li><strong>Backend:</strong> Python (Flask Framework)</li>
+            <li><strong>Machine Learning:</strong> Scikit-learn</li>
+            <li><strong>Frontend:</strong> HTML, CSS, Bootstrap</li>
+            <li><strong>Libraries:</strong> NumPy, Pandas, BeautifulSoup</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>

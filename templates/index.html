@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Phishing URL Detection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Bootstrap -->
+<link rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+<!-- KEEP YOUR BG IMAGE -->
+<link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+
+<style>
+/* GLOBAL */
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    line-height: 1.7;
+}
+
+/* NAVBAR */
+.navbar {
+    backdrop-filter: blur(8px);
+}
+
+/* HERO */
+.hero-section {
+    text-align: center;
+    padding: 3.2rem 1rem 2.5rem;
+}
+
+.hero-title {
+    font-size: 2.9rem;
+    font-weight: 800;
+}
+
+.hero-description {
+    font-size: 1.15rem;
+    max-width: 850px;
+    margin: auto;
+    color: rgba(255,255,255,0.9);
+}
+
+/* FADE */
+.fade-in {
+    animation: fadeUp 0.8s ease forwards;
+}
+@keyframes fadeUp {
+    from {opacity:0; transform: translateY(25px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* FORM CONTAINER */
+.form-container {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border-radius: 22px;
+    padding: 3rem;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+    position: relative;
+    z-index: 2;
+}
+
+/* INPUT */
+.url-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    font-size: 1.1rem;
+    padding: 1rem 0.5rem;
+    color: #111;
+    background: transparent;
+    caret-color: #111;
+}
+
+.url-input::placeholder {
+    color: #777;
+}
+
+/* BUTTON */
+.button {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 0.7rem 1.8rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* LOADER */
+.spinner {
+    width: 45px;
+    height: 45px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top: 4px solid #6366f1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+@keyframes spin {
+    to {transform: rotate(360deg);}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+<div class="container">
+<a class="navbar-brand font-weight-bold" href="/">🛡️ Phishing Detector</a>
+<div class="ml-auto">
+<a class="nav-link d-inline text-white" href="/">🏠 Home</a>
+<a class="nav-link d-inline text-white" href="/about">ℹ️ About</a>
+<a class="nav-link d-inline text-white" href="/history">📊 History</a>
+</div>
+</div>
+</nav>
+
+<!-- HERO -->
+<div class="container">
+<div class="hero-section fade-in">
+<h1 class="hero-title">🛡️ Phishing Website Detection</h1>
+<p class="hero-description">
+The Internet has become an indispensable part of our life. However, it has also provided opportunities 
+to anonymously perform malicious activities like Phishing. Phishers try to deceive their victims by 
+social engineering or creating mockup websites to steal information such as account ID, username, password 
+from individuals and organizations.
+</p>
+</div>
+</div>
+
+<!-- FORM -->
+<div class="container fade-in">
+<div class="form-container">
+
+<h2 class="text-center text-white" style="font-size:2rem; font-weight:700; margin-bottom:0.8rem;">
+🔍 Check URL Safety
+</h2>
+
+<p class="text-center text-light" style="font-size:1.15rem; margin-bottom:1.8rem;">
+Enter any URL below to analyze its safety
+</p>
+
+<form method="post" id="urlForm">
+
+<div class="d-flex align-items-center bg-white rounded-pill p-2 shadow">
+<span class="mx-3 text-primary" style="font-size:1.4rem;">🔗</span>
+
+<input type="text"
+       name="url"
+       id="urlInput"
+       class="url-input"
+       placeholder="https://example.com"
+       required
+       pattern=".*\..{2,}.*"
+       title="Please enter a valid URL with a domain name (e.g., example.com)">
+
+<button class="button">Analyze</button>
+</div>
+
+<!-- RESULT SHOWN JUST BELOW INPUT -->
+{% if xx >= 0 and url %}
+<div class="mt-4 fade-in" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 16px; padding: 2rem; margin-top: 2rem;">
+    <div class="text-center">
+        {% if prediction == 1 %}
+        <h3 style="color:#10b981; font-size:2rem; font-weight:700; margin-bottom:1rem;">
+            ✅ Website is SAFE
+        </h3>
+        {% else %}
+        <h3 style="color:#ef4444; font-size:2rem; font-weight:700; margin-bottom:1rem;">
+            ⚠️ Website is PHISHING
+        </h3>
+        {% endif %}
+
+        <div style="margin-bottom:1.5rem;">
+            <p style="color:#fff; font-size:1.1rem; margin-bottom:0.5rem;">
+                <strong>URL Checked:</strong>
+            </p>
+            <p style="color:#ffd700; font-size:1rem; word-break:break-all; margin-bottom:1rem;">
+                {{ url }}
+            </p>
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+            <div style="background:rgba(16,185,129,0.2); padding:1rem 1.5rem; border-radius:12px; border:2px solid #10b981;">
+                <p style="color:#10b981; font-size:0.9rem; margin:0; font-weight:600;">Safe Probability</p>
+                <p style="color:#fff; font-size:1.8rem; font-weight:700; margin:0.3rem 0 0 0;">
+                    {{ "%.1f"|format(xx * 100) }}%
+                </p>
+            </div>
+            <div style="background:rgba(239,68,68,0.2); padding:1rem 1.5rem; border-radius:12px; border:2px solid #ef4444;">
+                <p style="color:#ef4444; font-size:0.9rem; margin:0; font-weight:600;">Phishing Probability</p>
+                <p style="color:#fff; font-size:1.8rem; font-weight:700; margin:0.3rem 0 0 0;">
+                    {{ "%.1f"|format(phishing_prob * 100) }}%
+                </p>
+            </div>
+        </div>
+
+        <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid rgba(255,255,255,0.2);">
+            <a href="/history" class="button" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem;">
+                📊 View History
+            </a>
+        </div>
+    </div>
+</div>
+{% elif error %}
+<div id="serverError" class="mt-4 text-center fade-in error-message" style="background: rgba(239,68,68,0.2); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.5rem; margin-top: 2rem; border: 2px solid #ef4444;">
+    <h4 style="color:#ef4444; font-size:1.5rem; font-weight:700; margin-bottom:0.5rem;">
+        ⚠️ Error
+    </h4>
+    <p style="color:#fff; font-size:1.1rem;">
+        {{ error }}
+    </p>
+</div>
+{% endif %}
+
+</form>
+
+<div id="loadingIndicator" style="display:none; text-align:center; margin-top:2rem;">
+<div class="spinner"></div>
+<p class="mt-2 text-light">Analyzing URL…</p>
+</div>
+
+</div>
+</div>
+
+<script>
+// URL validation function
+function isValidURL(url) {
+    if (!url || url.trim().length === 0) {
+        return { valid: false, message: 'Please enter a URL' };
+    }
+    
+    // Remove whitespace
+    url = url.trim();
+    
+    // Check if it's just random characters without proper structure
+    // Must contain at least one dot for domain
+    if (!url.includes('.')) {
+        return { valid: false, message: 'This type of URL does not exist. Please enter a valid URL with proper domain name (e.g., example.com).' };
+    }
+    
+    // Check for valid domain pattern
+    // Remove scheme if present
+    let domain = url;
+    if (url.includes('://')) {
+        domain = url.split('://')[1];
+    }
+    
+    // Remove path, query, fragment
+    domain = domain.split('/')[0].split('?')[0].split('#')[0];
+    
+    // Check domain format
+    const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+    
+    if (!domainPattern.test(domain)) {
+        return { valid: false, message: 'This type of URL does not exist. Please enter a valid URL with proper domain name (e.g., example.com).' };
+    }
+    
+    return { valid: true };
+}
+
+// Store timeout IDs for error auto-hide
+let errorTimeoutIds = [];
+
+// Show loading indicator on form submit
+document.getElementById('urlForm').addEventListener('submit', function(e) {
+    const urlInput = document.getElementById('urlInput');
+    const url = urlInput.value.trim();
+    
+    // Validate URL before submission
+    const validation = isValidURL(url);
+    if (!validation.valid) {
+        e.preventDefault();
+        
+        // Clear any existing error timeouts
+        errorTimeoutIds.forEach(function(timeoutId) {
+            clearTimeout(timeoutId);
+        });
+        errorTimeoutIds = [];
+        
+        // Show error message
+        let errorDiv = document.getElementById('clientError');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.id = 'clientError';
+            errorDiv.className = 'mt-4 text-center fade-in error-message';
+            errorDiv.style.cssText = 'background: rgba(239,68,68,0.2); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.5rem; margin-top: 2rem; border: 2px solid #ef4444;';
+            errorDiv.innerHTML = '<h4 style="color:#ef4444; font-size:1.5rem; font-weight:700; margin-bottom:0.5rem;">⚠️ Error</h4><p style="color:#fff; font-size:1.1rem;" id="errorMessage"></p>';
+            document.querySelector('.form-container').appendChild(errorDiv);
+        }
+        document.getElementById('errorMessage').textContent = validation.message;
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Auto-hide error after 2.5 minutes (150 seconds)
+        const timeoutId = setTimeout(function() {
+            if (errorDiv && errorDiv.parentNode) {
+                errorDiv.style.transition = 'opacity 0.5s ease-out';
+                errorDiv.style.opacity = '0';
+                const fadeTimeoutId = setTimeout(function() {
+                    if (errorDiv && errorDiv.parentNode) {
+                        errorDiv.remove();
+                    }
+                }, 500);
+                errorTimeoutIds = errorTimeoutIds.filter(id => id !== fadeTimeoutId);
+            }
+        }, 150000); // 150 seconds = 2.5 minutes
+        errorTimeoutIds.push(timeoutId);
+        
+        return false;
+    }
+    
+    // Remove any existing client error
+    const existingError = document.getElementById('clientError');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    document.getElementById('loadingIndicator').style.display = 'block';
+    // Scroll to form after a short delay
+    setTimeout(function() {
+        document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+});
+
+// Real-time validation feedback
+document.getElementById('urlInput').addEventListener('blur', function() {
+    const url = this.value.trim();
+    if (url) {
+        const validation = isValidURL(url);
+        if (!validation.valid) {
+            this.style.borderColor = '#ef4444';
+            this.style.borderWidth = '2px';
+        } else {
+            this.style.borderColor = '';
+            this.style.borderWidth = '';
+        }
+    }
+});
+
+// Auto-hide error messages after 2.5 minutes (150 seconds)
+function setupErrorAutoHide() {
+    const errorMessages = document.querySelectorAll('.error-message');
+    errorMessages.forEach(function(errorDiv) {
+        const timeoutId = setTimeout(function() {
+            if (errorDiv && errorDiv.parentNode) {
+                errorDiv.style.transition = 'opacity 0.5s ease-out';
+                errorDiv.style.opacity = '0';
+                const fadeTimeoutId = setTimeout(function() {
+                    if (errorDiv && errorDiv.parentNode) {
+                        errorDiv.remove();
+                    }
+                }, 500);
+                errorTimeoutIds = errorTimeoutIds.filter(id => id !== fadeTimeoutId);
+            }
+        }, 150000); // 150 seconds = 2.5 minutes
+        errorTimeoutIds.push(timeoutId);
+    });
+}
+
+// Setup auto-hide for server-side errors on page load
+window.addEventListener('load', function() {
+    setupErrorAutoHide();
+    
+    // If there's a result, scroll to it
+    if (window.hasResult) {
+        setTimeout(function() {
+            const resultDiv = document.querySelector('.fade-in[style*="background: rgba(255,255,255,0.1)"]');
+            if (resultDiv) {
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 300);
+    }
+});
+</script>
+
+{% if xx >= 0 and url %}
+<script>
+// Set flag for result scrolling
+window.hasResult = true;
+</script>
+{% endif %}
+
+</body>
+</html>
